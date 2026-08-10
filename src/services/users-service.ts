@@ -60,15 +60,14 @@ export async function loginUserService(input: LoginUserInput): Promise<LoginUser
   // 1. Find user by email
   const existingUsers = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
-  if (existingUsers.length === 0) {
+  const user = existingUsers[0];
+  if (!user) {
     return {
       success: false,
       error: 'email atau password salah',
       statusCode: 400,
     };
   }
-
-  const user = existingUsers[0];
 
   // 2. Verify password
   const isMatch = await bcrypt.compare(password, user.password);
@@ -113,28 +112,26 @@ export async function getCurrentUserService(token: string): Promise<GetCurrentUs
   // 1. Find session by token
   const sessions = await db.select().from(session).where(eq(session.token, token)).limit(1);
 
-  if (sessions.length === 0) {
+  const userSession = sessions[0];
+  if (!userSession) {
     return {
       success: false,
       error: 'Unauthorized',
       statusCode: 401,
     };
   }
-
-  const userSession = sessions[0];
 
   // 2. Find user by userId
   const foundUsers = await db.select().from(users).where(eq(users.id, userSession.userId)).limit(1);
 
-  if (foundUsers.length === 0) {
+  const user = foundUsers[0];
+  if (!user) {
     return {
       success: false,
       error: 'Unauthorized',
       statusCode: 401,
     };
   }
-
-  const user = foundUsers[0];
 
   return {
     success: true,

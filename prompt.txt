@@ -2,31 +2,24 @@ buatkan issue.md, yg berisi perancanaan untuk nanti diimplementasikan oleh junio
 
 isi dari planning nya adalah sebagai berikut :
 
-buat table session:
-id integer auto increment 
-token varchar 255 not null (isinya UUID untuk token user yg login)
-user_id integer (FK ke table user)
-created_at timestamp default current_timestamp
 
-buatkan API untuk login user
+buatkan API untuk logout user
 
-Endpoint: POST /api/users
+Endpoint: DELETE /api/users/logout
 
-Request Body : 
-{
-    "email" : "depi@gmail.com",
-    "password" : "rahasia"
-}
+
+headers : 
+- Authorization : Bearer <token> (token adalah token yang ada di table users)
 
 Response Body (success):
 
 {
-    "data" : "token"    
+    "data" : "OK"
 }
 
 Respons Body (Error) :
 {
-    "error" : "email atau password salah"
+    "error" : "Unauthorized"
 }
 
 Struktur folder di dalam src:
