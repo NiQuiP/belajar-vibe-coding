@@ -149,20 +149,16 @@ export type LogoutUserResult =
   | { success: false; error: string; statusCode: number };
 
 export async function logoutUserService(token: string): Promise<LogoutUserResult> {
-  // 1. Find session by token
-  const sessions = await db.select().from(session).where(eq(session.token, token)).limit(1);
+  // Directly delete session and check affectedRows to save a database round-trip
+  const [result] = await db.delete(session).where(eq(session.token, token));
 
-  const userSession = sessions[0];
-  if (!userSession) {
+  if (!result || result.affectedRows === 0) {
     return {
       success: false,
       error: 'Unauthorized',
       statusCode: 401,
     };
   }
-
-  // 2. Delete session
-  await db.delete(session).where(eq(session.token, token));
 
   return {
     success: true,
