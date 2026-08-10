@@ -2,33 +2,12 @@ buatkan issue.md, yg berisi perancanaan untuk nanti diimplementasikan oleh junio
 
 isi dari planning nya adalah sebagai berikut :
 
+buatkan unit test untuk semua API yang tersedia, 
+simpan di folder test menggunakan bun test 
 
-buatkan API untuk logout user
+simpan skenario, hapus datanya terlebih dahulu agar konsisten
 
-Endpoint: DELETE /api/users/logout
-
-
-headers : 
-- Authorization : Bearer <token> (token adalah token yang ada di table users)
-
-Response Body (success):
-
-{
-    "data" : "OK"
-}
-jika sukses logout, maka data session dengan token tersebut harus dihapus dari table sessions
-
-Respons Body (Error) :
-{
-    "error" : "Unauthorized"
-}
-
-Struktur folder di dalam src:
-- routes : ini berisi routing elysia js
-- services : ini berisi logic bisnis aplikasi
-
-Struktur file 
-- routes : menggunakan format misal users-route.ts
-- services : menggunakan format misal users-service.ts
-
-JElaskan tahapan-tahapan yang harus dilakukan untuk mengimplementasikan fitur ini, anggap nanti yang mengimplementasikan adalah junior programmer atau ai model yang lebih murah
+jangan buatkan terlalu detail instruksi unit
+testnya. Buatkan saja skenario apa yang harus ditest,
+biarkan nanti yang implementasi detail
+skenarionya adalah junior programmer atau ai model yang lebih murah
