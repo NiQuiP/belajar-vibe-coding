@@ -15,6 +15,13 @@
       "when": 1786354177274,
       "tag": "0001_friendly_ultimo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1786355056499,
+      "tag": "0002_abnormal_stark_industries",
+      "breakpoints": true
     }
   ]
 }
