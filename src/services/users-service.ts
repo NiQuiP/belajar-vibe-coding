@@ -97,3 +97,52 @@ export async function loginUserService(input: LoginUserInput): Promise<LoginUser
     data: token,
   };
 }
+
+export interface CurrentUserResponse {
+  id: number;
+  name: string;
+  email: string;
+  created_at: Date | string;
+}
+
+export type GetCurrentUserResult =
+  | { success: true; data: CurrentUserResponse }
+  | { success: false; error: string; statusCode: number };
+
+export async function getCurrentUserService(token: string): Promise<GetCurrentUserResult> {
+  // 1. Find session by token
+  const sessions = await db.select().from(session).where(eq(session.token, token)).limit(1);
+
+  if (sessions.length === 0) {
+    return {
+      success: false,
+      error: 'Unauthorized',
+      statusCode: 401,
+    };
+  }
+
+  const userSession = sessions[0];
+
+  // 2. Find user by userId
+  const foundUsers = await db.select().from(users).where(eq(users.id, userSession.userId)).limit(1);
+
+  if (foundUsers.length === 0) {
+    return {
+      success: false,
+      error: 'Unauthorized',
+      statusCode: 401,
+    };
+  }
+
+  const user = foundUsers[0];
+
+  return {
+    success: true,
+    data: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      created_at: user.createdAt,
+    },
+  };
+}
