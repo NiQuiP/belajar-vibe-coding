@@ -3,7 +3,7 @@ import { registerUserService, loginUserService, getCurrentUserService, logoutUse
 
 export const usersRoute = new Elysia()
   .post(
-    '/users/register',
+    '/api/users/register',
     async ({ body, set }) => {
       try {
         const result = await registerUserService(body);
@@ -33,7 +33,7 @@ export const usersRoute = new Elysia()
     }
   )
   .post(
-    '/api/users',
+    '/api/users/login',
     async ({ body, set }) => {
       try {
         const result = await loginUserService(body);
