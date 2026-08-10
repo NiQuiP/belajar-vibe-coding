@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { registerUserService, loginUserService, getCurrentUserService } from '../services/users-service';
+import { registerUserService, loginUserService, getCurrentUserService, logoutUserService } from '../services/users-service';
 
 export const usersRoute = new Elysia()
   .post(
@@ -74,6 +74,37 @@ export const usersRoute = new Elysia()
         }
 
         const result = await getCurrentUserService(token);
+
+        if (!result.success) {
+          set.status = result.statusCode;
+          return { error: result.error };
+        }
+
+        set.status = 200;
+        return { data: result.data };
+      } catch (error: any) {
+        set.status = 500;
+        return { error: error.message || 'Internal Server Error' };
+      }
+    }
+  )
+  .delete(
+    '/api/users/logout',
+    async ({ headers, set }) => {
+      try {
+        const authHeader = headers['authorization'] || headers['Authorization'];
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          set.status = 401;
+          return { error: 'Unauthorized' };
+        }
+
+        const token = authHeader.substring(7).trim();
+        if (!token) {
+          set.status = 401;
+          return { error: 'Unauthorized' };
+        }
+
+        const result = await logoutUserService(token);
 
         if (!result.success) {
           set.status = result.statusCode;

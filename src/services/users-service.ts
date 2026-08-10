@@ -143,3 +143,29 @@ export async function getCurrentUserService(token: string): Promise<GetCurrentUs
     },
   };
 }
+
+export type LogoutUserResult =
+  | { success: true; data: string }
+  | { success: false; error: string; statusCode: number };
+
+export async function logoutUserService(token: string): Promise<LogoutUserResult> {
+  // 1. Find session by token
+  const sessions = await db.select().from(session).where(eq(session.token, token)).limit(1);
+
+  const userSession = sessions[0];
+  if (!userSession) {
+    return {
+      success: false,
+      error: 'Unauthorized',
+      statusCode: 401,
+    };
+  }
+
+  // 2. Delete session
+  await db.delete(session).where(eq(session.token, token));
+
+  return {
+    success: true,
+    data: 'OK',
+  };
+}
