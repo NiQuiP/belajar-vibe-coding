@@ -143,3 +143,25 @@ export async function getCurrentUserService(token: string): Promise<GetCurrentUs
     },
   };
 }
+
+export type LogoutUserResult =
+  | { success: true; data: string }
+  | { success: false; error: string; statusCode: number };
+
+export async function logoutUserService(token: string): Promise<LogoutUserResult> {
+  // Directly delete session and check affectedRows to save a database round-trip
+  const [result] = await db.delete(session).where(eq(session.token, token));
+
+  if (!result || result.affectedRows === 0) {
+    return {
+      success: false,
+      error: 'Unauthorized',
+      statusCode: 401,
+    };
+  }
+
+  return {
+    success: true,
+    data: 'OK',
+  };
+}

@@ -16,6 +16,7 @@ Response Body (success):
 {
     "data" : "OK"
 }
+jika sukses logout, maka data session dengan token tersebut harus dihapus dari table sessions
 
 Respons Body (Error) :
 {
