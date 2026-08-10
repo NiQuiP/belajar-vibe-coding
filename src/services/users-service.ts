@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
 import { db } from '../db';
-import { users, type NewUser } from '../db/schema';
+import { users, session, type NewUser, type NewSession } from '../db/schema';
 
 export interface RegisterUserInput {
   name: string;
@@ -42,5 +42,58 @@ export async function registerUserService(input: RegisterUserInput): Promise<Reg
   return {
     success: true,
     data: 'OK',
+  };
+}
+
+export interface LoginUserInput {
+  email: string;
+  password: string;
+}
+
+export type LoginUserResult =
+  | { success: true; data: string }
+  | { success: false; error: string; statusCode: number };
+
+export async function loginUserService(input: LoginUserInput): Promise<LoginUserResult> {
+  const { email, password } = input;
+
+  // 1. Find user by email
+  const existingUsers = await db.select().from(users).where(eq(users.email, email)).limit(1);
+
+  if (existingUsers.length === 0) {
+    return {
+      success: false,
+      error: 'email atau password salah',
+      statusCode: 400,
+    };
+  }
+
+  const user = existingUsers[0];
+
+  // 2. Verify password
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return {
+      success: false,
+      error: 'email atau password salah',
+      statusCode: 400,
+    };
+  }
+
+  // 3. Generate UUID token
+  const token = crypto.randomUUID();
+
+  // 4. Save session
+  const newSession: NewSession = {
+    token,
+    userId: user.id,
+  };
+
+  await db.insert(session).values(newSession);
+
+  // 5. Return token
+  return {
+    success: true,
+    data: token,
   };
 }
